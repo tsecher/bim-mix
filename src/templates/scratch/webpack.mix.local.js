@@ -15,9 +15,11 @@
 // bimMix.getMix().disableNotifications();
 
 // Enable live reload.
-// const LiveReloadPlugin = require('webpack-livereload-plugin');
-// bimMix.getMix().webpackConfig({
-// 	plugins: [
-// 		new LiveReloadPlugin()
-// 	]
-// });
+// if( process.argv.indexOf('--watch') > -1 ){
+// 	const LiveReloadPlugin = require('webpack-livereload-plugin');
+// 	bimMix.getMix().webpackConfig({
+// 		plugins: [
+// 			new LiveReloadPlugin()
+// 		]
+// 	});
+// }

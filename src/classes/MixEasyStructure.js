@@ -17,6 +17,7 @@
  *
  */
 const MixGlob = require('laravel-mix-glob');
+const MixEasyConfMatch = require('./MixEasyConfigMatch');
 const MixEasyStructureConfig = require('./MixEasyStructureConfig');
 const fs = require('fs');
 const minimatch = require('minimatch');
@@ -103,10 +104,11 @@ class MixEasyStructure {
 	 * Init default scss config
 	 */
 	initDefaultConfig_scss() {
+		const match = MixEasyConfMatch.get('scss');
 		const cssConfig = new MixEasyStructureConfig('scss')
-			.setMixCallbackName('sass')
-			.setDestinationRep('css')
-			.setOutputExtension('css');
+			.setMixCallbackName(match.callback)
+			.setDestinationRep(match.destination)
+			.setOutputExtension(match.extension);
 		this.addProcessConfig(cssConfig);
 	}
 
@@ -114,7 +116,11 @@ class MixEasyStructure {
 	 * Init default js config.
 	 */
 	initDefaultConfig_js() {
-		const jsConfig = new MixEasyStructureConfig('js');
+		const match = MixEasyConfMatch.get('js');
+		const jsConfig = new MixEasyStructureConfig('js')
+			.setMixCallbackName(match.callback)
+			.setDestinationRep(match.destination)
+			.setOutputExtension(match.extension);
 		this.addProcessConfig(jsConfig);
 	}
 
@@ -122,9 +128,11 @@ class MixEasyStructure {
 	 * Init default ts config.
 	 */
 	initDefaultConfig_ts() {
+		const match = MixEasyConfMatch.get('ts');
 		const tsConfig = new MixEasyStructureConfig('ts')
-			.setDestinationRep('js')
-			.setOutputExtension('js')
+			.setMixCallbackName(match.callback)
+			.setDestinationRep(match.destination)
+			.setOutputExtension(match.extension)
 			.allFilesStartingWithLowerCaseAreEntryPoints();
 		this.addProcessConfig(tsConfig);
 	}
@@ -275,7 +283,7 @@ class MixEasyStructure {
 	getConfsFromSrcFilePath(src) {
 		return this.getListOfProcess().filter(conf => {
 			return conf.getPattern()
-			// Parse only positive patterns.
+				// Parse only positive patterns.
 				.filter(pattern => {
 					return pattern[0] !== '!';
 				})
