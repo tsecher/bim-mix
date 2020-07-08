@@ -1,5 +1,5 @@
 const bimMix = require('bim-mix');
-const configMatch = require('MixEasyConfigMatch')
+const configMatch = require('./MixEasyConfigMatch')
 const glob = require('glob');
 
 /**
@@ -62,6 +62,10 @@ class MixEasyBundleConfigurator {
     let output = out.split('/')
     output.splice(0, 1)
     output.splice(-2, 1)
+
+    if( output[0]+'/' === this.root ){
+      output = output.slice(1)
+    }
     return output.join('/');
   }
 

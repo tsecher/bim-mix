@@ -1,6 +1,6 @@
 {
   "name": "bim-mix",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Tools defining an easy laravel-mix structure",
   "main": "src/index.js",
   "scripts": {
