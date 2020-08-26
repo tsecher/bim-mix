@@ -97,6 +97,9 @@ class MixEasyStructure {
 			if (typeof this[method] === "function") {
 				this[method]();
 			}
+			else{
+				this.initDefaultConfigFallback(i);
+			}
 		});
 	}
 
@@ -135,6 +138,54 @@ class MixEasyStructure {
 			.setOutputExtension(match.extension)
 			.allFilesStartingWithLowerCaseAreEntryPoints();
 		this.addProcessConfig(tsConfig);
+	}
+
+	/**
+	 * Init default images config
+	 */
+	initDefaultConfig_img(){
+		// add image min extension.
+		const Imagemin = require('../extensions/mix-imagemin/Imagemin');
+		this.mix.extend('imagemin', new Imagemin());
+
+		const sourceRep = 'img'
+		const match = MixEasyConfMatch.get(sourceRep);
+		const imageConfig = new MixEasyStructureConfig(sourceRep)
+			.setMixCallbackName(match.callback)
+			.setExtension(match.extension)
+			.setDestinationRep(match.destination)
+			.setOutputExtension(match.extension)
+			.setMixOptions(match.mixOptions)
+			.allFilesAreEntryPoints();
+		
+		imageConfig.getMixExtensionSecondParameter = (processConfig) => {
+			const patternData = processConfig.getPattern()[0].split('/')
+			return {
+				patterns: [
+					{
+						from: patternData.slice(1).join('/'),
+						to: this.destinationRoot+'/'+(patternData[0]===sourceRep?sourceRep:''),
+						context:patternData[0]+"/",
+					},
+				],
+			}
+		}
+
+		this.addProcessConfig(imageConfig);
+	}
+
+	/**
+	 * Fallback
+	 */
+	initDefaultConfigFallback(rep){
+		const match = MixEasyConfMatch.get(rep);
+		if( this._mixCallbackExists(match.callback)){
+			const config = new MixEasyStructureConfig(rep)
+				.setMixCallbackName(match.callback)
+				.setDestinationRep(match.destination)
+				.setOutputExtension(match.extension)
+			this.addProcessConfig(config)
+		}
 	}
 
 	/**
@@ -205,27 +256,61 @@ class MixEasyStructure {
 	 */
 	_runProcess(processConfig) {
 		// Define the mix callback.
-		const mixCallback = this.mixGlob[processConfig.getMixCallbackName()];
+		const callbackName = processConfig.getMixCallbackName();
 
-		if (typeof mixCallback === 'function') {
-			// Initialise the method taht overrides the output item.
-			this.initMixOverride(processConfig);
-
-			mixCallback(
-				// the patterns that matches the files to process.
-				processConfig.getPattern(),
-				// the destination, relative to public path.
-				`./${processConfig.getDestinationRep()}`,
-				// the mix configuration.
-				processConfig.getMixOptions(),
-				// the mixglob configuration.
-				{
-					base: (file, ext, mm) => {
-						return '/../';
-					}
-				}
-			)
+		// First, try to run the mix glob callback.
+		if (typeof this.mixGlob[callbackName] === 'function') {
+			this._runMixGlobCallback(processConfig, this.mixGlob[callbackName]);
 		}
+		// Then, try to run the default mix callback.
+		else if( typeof this.mix[callbackName] === 'function'){
+			this._runMixCallback(processConfig, this.mix[callbackName])
+		}
+	}
+
+	/**
+	 * Check if the mix callback exists.
+	 * @param callbackName
+	 * @return {boolean}
+	 * @private
+	 */
+	_mixCallbackExists(callbackName){
+		return typeof this.mixGlob[callbackName] === 'function' || typeof this.mix[callbackName] === 'function';
+	}
+
+	/**
+	 * Run mix glob callback.
+	 * @param processConfig
+	 * @private
+	 */
+	_runMixGlobCallback(processConfig, mixCallback){
+		// Initialise the method taht overrides the output item.
+		this.initMixOverride(processConfig);
+
+		this._runMixCallback(processConfig, mixCallback);
+	}
+
+	/**
+	 * Run default mix callback.
+	 * @param processConfig
+	 * @param mixCallback
+	 * @private
+	 */
+	_runMixCallback(processConfig, mixCallback){
+		mixCallback(
+			// the patterns that matches the files to process.
+			processConfig.getPattern(),
+			// the destination, relative to public path.
+			processConfig.getMixExtensionSecondParameter(processConfig),
+			// the mix configuration.
+			processConfig.getMixOptions(),
+			// the mixglob configuration.
+			{
+				base: (file, ext, mm) => {
+					return '/../';
+				}
+			}
+		)
 	}
 
 	/**
@@ -294,6 +379,17 @@ class MixEasyStructure {
 				// REturn true of at least one pattern is matching.
 				.length > 0;
 		});
+	}
+
+	/**
+	 * Return the config process.
+	 * @param id
+	 * @return {T}
+	 */
+	getProcessConfig(id){
+		return this.processConfig.filter(config => {
+			return  config.getId() === id
+		})[0];
 	}
 }
 

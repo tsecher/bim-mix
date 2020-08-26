@@ -78,14 +78,11 @@ class MixEasyBundleConfigurator {
    * @param extension
    */
   addConf(id, mixCallbackName, dir, extension) {
-    const conf = new bimMix.config(id)
-        .setMixCallbackName(mixCallbackName)
-        .setExtension(extension)
+    const conf = bimMix.getProcessConfig(id)
         .setPattern([
           `${this.root}${dir}/*.${extension}`
         ])
         .setOutputCallback((src, out, option, conf) => this.bundleOutput(src, out, option, conf))
-    bimMix.addProcessConfig(conf);
   }
 }
 

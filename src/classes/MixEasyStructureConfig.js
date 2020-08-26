@@ -228,7 +228,8 @@ class MixEasyStructureConfig {
 				'${rep}/**/*.${ext}',
 				'!${rep}/**/_*.${ext}',
 			],
-			'allFilesNotStartingWithUnderscoreAreEntryPoints');
+			'allFilesNotStartingWithUnderscoreAreEntryPoints'
+		);
 		return this;
 	}
 
@@ -240,7 +241,21 @@ class MixEasyStructureConfig {
 			[
 				'${rep}/**/[a-z]*.${ext}'
 			],
-			'allFilesStartingWithLowerCaseAreEntryPoints');
+			'allFilesStartingWithLowerCaseAreEntryPoints'
+		);
+		return this;
+	}
+
+	/**
+	 * Define a configuratin where all files are entry points.
+	 */
+	allFilesAreEntryPoints() {
+		this._setAutoPattern(
+			[
+				'${rep}/**/*.${ext}'
+			],
+			'allFilesAreEntryPoints'
+		);
 		return this;
 	}
 
@@ -280,6 +295,13 @@ class MixEasyStructureConfig {
 			result = result.split(i).join(patterns[i]);
 		}
 		return result;
+	}
+
+	/**
+	 * Return the second parametert for the mix extension.
+	 */
+	getMixExtensionSecondParameter(processConfig){
+		return `./${processConfig.getDestinationRep()}`
 	}
 }
 

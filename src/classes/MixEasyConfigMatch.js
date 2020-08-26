@@ -15,6 +15,23 @@ const MixEasyConfigMatch = {
       callback: 'js',
       destination: 'js',
       extension: 'js',
+    },
+    'img': {
+      callback: 'imagemin',
+      destination: 'img',
+      extension: '*',
+      mixOptions: {
+        optipng: {
+          optimizationLevel: 5
+        },
+        jpegtran: null,
+        plugins: [
+          require('imagemin-mozjpeg')({
+            quality: 75,
+            progressive: true,
+          }),
+        ],
+      }
     }
   },
 
@@ -23,6 +40,7 @@ const MixEasyConfigMatch = {
       return this.data[type]
     }
     return {
+      auto:true,
       callback: type,
       destination: type,
       extension: type,
