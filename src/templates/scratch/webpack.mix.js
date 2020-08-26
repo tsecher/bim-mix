@@ -38,10 +38,14 @@ const mix = bimMix.getMix();
             bundle1.js
             bundle1.screen.css
             bundle1.print.css
+            ./img
+                my-image.jpg
 
     ./src
         ./bundles
             ./bundle1
+                ./img
+                    my-image.jpg
                 ./js
                     ./components
                         component1.js
@@ -53,7 +57,9 @@ const mix = bimMix.getMix();
                     bundle1.screen.scss
                     bundle1.print.scss
  */
+
 // // Enable bundle auto configuration.
+// const MixEasyBundleConfigurator = require('bim-mix/src/classes/MixEasyBundleConfigurator');
 // const bundler = new MixEasyBundleConfigurator('bundles')
 // bundler.autoConfiguration('*');
 
