@@ -1,2 +1,3 @@
 # Ignore local configuration files.
 webpack.mix.local.js
+node_modules
