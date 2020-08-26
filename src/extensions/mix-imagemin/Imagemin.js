@@ -11,7 +11,7 @@ class Imagemin {
             Please run "npm run dev" again.
         `;
 
-        return ['copy-webpack-plugin', 'imagemin-webpack-plugin', 'multimatch'];
+        return ['copy-webpack-plugin', 'imagemin-webpack-plugin', 'multimatch', 'imagemin-mozjpeg'];
     }
 
     register(patterns, copyOptions = {}, imageminOptions = {}) {
