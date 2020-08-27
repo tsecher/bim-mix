@@ -78,16 +78,9 @@ class MixEasyBundleConfigurator {
    * @param extension
    */
   addConf(id, mixCallbackName, dir, extension) {
-    let conf = bimMix.getProcessConfig(id);
-    if(typeof conf === "undefined"){
-      conf = new bimMix.config(id)
-          .setMixCallbackName(mixCallbackName)
-          .setExtension(extension)
-      bimMix.addProcessConfig(conf)
-    }
-
-    conf.setPattern([ `${this.root}${dir}/*.${extension}` ])
-        .setOutputCallback((src, out, option, conf) => this.bundleOutput(src, out, option, conf))
+    bimMix.initDefaultConfig(id)
+      .setPattern([ `${this.root}${dir}/*.${extension}` ])
+      .setOutputCallback((src, out, option, conf) => this.bundleOutput(src, out, option, conf))
   }
 }
 

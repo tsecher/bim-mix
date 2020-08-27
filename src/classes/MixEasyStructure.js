@@ -33,7 +33,7 @@ class MixEasyStructure {
 		this.setDestination();
 
 		// Init process defautl config.
-		this.initDefaultConfig();
+		this.initAllDefaultConfig();
 	}
 
 	/**
@@ -76,6 +76,38 @@ class MixEasyStructure {
 	}
 
 	/**
+	 * Init the default config.
+	 */
+	initAllDefaultConfig() {
+		this.processConfig = [];
+
+		// Get the list of current directories.
+		this.getDirectories('./').map(confId => this.initDefaultConfig(confId));
+	}
+
+	/**
+	 * Init the config with default data.
+	 *
+	 * @param configId
+	 * @return {T}
+	 */
+	initDefaultConfig(configId){
+		let conf = this.getProcessConfig(configId);
+
+		if( !conf ){
+			const method = `initDefaultConfig_${configId}`;
+			if (typeof this[method] === "function") {
+				conf = this[method]();
+			}
+			else{
+				conf = this.initDefaultConfigFallback(configId);
+			}
+		}
+
+		return conf;
+	}
+
+	/**
 	 * Update the destination roots.
 	 *
 	 * @param string prod
@@ -83,24 +115,6 @@ class MixEasyStructure {
 	 */
 	setDestination(prod = '../dist', dev = '../dev') {
 		this.destinationRoot = this.mix.inProduction() ? prod : dev;
-	}
-
-	/**
-	 * Init the default config.
-	 */
-	initDefaultConfig() {
-		this.processConfig = [];
-
-		// Get the list of current directories.
-		this.getDirectories('./').map(i => {
-			const method = `initDefaultConfig_${i}`;
-			if (typeof this[method] === "function") {
-				this[method]();
-			}
-			else{
-				this.initDefaultConfigFallback(i);
-			}
-		});
 	}
 
 	/**
@@ -113,6 +127,8 @@ class MixEasyStructure {
 			.setDestinationRep(match.destination)
 			.setOutputExtension(match.extension);
 		this.addProcessConfig(cssConfig);
+
+		return cssConfig;
 	}
 
 	/**
@@ -125,6 +141,8 @@ class MixEasyStructure {
 			.setDestinationRep(match.destination)
 			.setOutputExtension(match.extension);
 		this.addProcessConfig(jsConfig);
+
+		return jsConfig;
 	}
 
 	/**
@@ -138,6 +156,8 @@ class MixEasyStructure {
 			.setOutputExtension(match.extension)
 			.allFilesStartingWithLowerCaseAreEntryPoints();
 		this.addProcessConfig(tsConfig);
+
+		return tsConfig;
 	}
 
 	/**
@@ -172,6 +192,8 @@ class MixEasyStructure {
 		}
 
 		this.addProcessConfig(imageConfig);
+
+		return imageConfig;
 	}
 
 	/**
@@ -185,7 +207,11 @@ class MixEasyStructure {
 				.setDestinationRep(match.destination)
 				.setOutputExtension(match.extension)
 			this.addProcessConfig(config)
+
+			return config;
 		}
+
+		return null;
 	}
 
 	/**

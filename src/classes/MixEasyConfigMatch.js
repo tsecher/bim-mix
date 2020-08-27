@@ -20,17 +20,19 @@ const MixEasyConfigMatch = {
       callback: 'imagemin',
       destination: 'img',
       extension: '*',
-      mixOptions: {
-        optipng: {
-          optimizationLevel: 5
-        },
-        jpegtran: null,
-        plugins: [
-          require('imagemin-mozjpeg')({
-            quality: 75,
-            progressive: true,
-          }),
-        ],
+      mixOptions: (processConfig) => {
+        return {
+          optipng: {
+            optimizationLevel: 1
+          },
+          jpegtran: null,
+          plugins: [
+            require('imagemin-mozjpeg')({
+              quality: 75,
+              progressive: true,
+            }),
+          ],
+        }
       }
     }
   },
